@@ -1069,9 +1069,6 @@ contexts:
         - match: '\('
           scope: punctuation.section.parens.begin.d
           set: [first-value-parens-after, typeof-value]
-    - match: '\b({{basic_type}})\b'
-      scope: storage.type.d
-      set: first-value-after
     - match: '\b(mixin)\s*(\()'
       captures:
         1: keyword.control.d
@@ -1087,6 +1084,10 @@ contexts:
     - match: '\b({{language_variable}})\b'
       scope: variable.language.d
       set: first-value-after
+    - match: '\b(auto|scope)\b'
+      scope: storage.modifier.d
+    - match: '{{definitely_declaration_lookahead}}'
+      push: [function-or-variable-after-type, type]
     - match: '{{name_lookahead}}'
       set: [first-value-after, value-identifier]
     - match: '(?=\S)'
