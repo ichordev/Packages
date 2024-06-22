@@ -2021,6 +2021,8 @@ extern(1)
 //        ^ punctuation.section.block.end.d
 //          ^^^^ keyword.control.conditional.d
 //               ^ meta.number.integer.decimal.d
+  if (auto a = 2 in b) {}
+  if (int a = 2 in b) {}
   if (int a = 2) {}
 //^^ keyword.control.conditional.d
 //   ^ punctuation.section.parens.begin.d
@@ -2278,7 +2280,6 @@ extern(1)
 //        ^ punctuation.section.parens.begin.d
 //         ^^^^^^^^^ storage.type.d
 //                  ^ invalid.illegal.d
-//                    ^^^ meta.path.d storage.type.d
 //                         ^ invalid.illegal.d
 //                           ^ punctuation.section.block.begin.d
   }
@@ -3231,7 +3232,7 @@ extern(1)
 //            ^ punctuation.section.block.begin.d
 //             ^ punctuation.section.block.end.d
   a[b] * c;
-//^ meta.path.d variable.other.d
+//^ meta.path.d storage.type.d
 // ^ punctuation.section.brackets.begin.d
 //  ^ meta.path.d variable.other.d
 //   ^ punctuation.section.brackets.end.d
@@ -3243,15 +3244,14 @@ extern(1)
 //  ^^ keyword.operator.pointer.d
 //    ^ invalid.illegal.d
 //     ^ punctuation.terminator.d
-  void*
+  void* foo();
 //^^^^ storage.type.d
 //    ^ keyword.operator.pointer.d
-  foo();
-//^^^ meta.function.d entity.name.function.d
-//   ^^ meta.function.parameters.d
-//   ^ punctuation.section.group.begin.d
-//    ^ punctuation.section.group.end.d
-//     ^ meta.function.d punctuation.terminator.d
+//      ^^^ meta.function.d entity.name.function.d
+//         ^^ meta.function.parameters.d
+//         ^ punctuation.section.group.begin.d
+//          ^ punctuation.section.group.end.d
+//           ^ meta.function.d punctuation.terminator.d
 
   }
 //^ invalid.illegal.d
@@ -3330,6 +3330,27 @@ extern(1)
 //               ^ punctuation.section.group.end.d
 //                 ^^^^^^^^ entity.name.type.d
 //                         ^ punctuation.terminator.d
+
+  S s = [
+//^ meta.path.d storage.type.d
+//  ^ variable.other.d
+//    ^ keyword.operator.assignment.d
+//      ^ punctuation.section.brackets.begin.d
+//      ^ meta.block.d
+    {{}, {}},
+//  ^^^^^^^^^ meta.block.d
+//  ^ punctuation.section.block.begin.d
+//   ^ punctuation.section.block.begin.d
+//    ^ punctuation.section.block.end.d
+//     ^ punctuation.separator.sequence.d
+//       ^ punctuation.section.block.begin.d
+//        ^ punctuation.section.block.end.d
+//         ^ punctuation.section.block.end.d
+//          ^ punctuation.separator.sequence.d
+  ];
+//^ meta.block.d
+//^ punctuation.section.brackets.end.d
+// ^ punctuation.terminator.d
 
   S s = { a: 1, b: "hi",
 //^ meta.path.d storage.type.d
