@@ -688,7 +688,7 @@ contexts:
   extern-attribute-after:
     - match: ','
       scope: punctuation.separator.sequence.d
-      set: extern-attribute
+      set: [extern-attribute-after, value]
     - match: '\)'
       scope: punctuation.section.parens.end.d
       pop: true
