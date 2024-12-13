@@ -1084,7 +1084,7 @@ contexts:
     - match: '\b({{language_variable}})\b'
       scope: variable.language.d
       set: first-value-after
-    - match: '\b(auto|scope)\b'
+    - match: '\b(scope|auto|ref|const|immutable|inout|shared)\b'
       scope: storage.modifier.d
     - match: '{{definitely_declaration_lookahead}}'
       push: [function-or-variable-after-type, type]

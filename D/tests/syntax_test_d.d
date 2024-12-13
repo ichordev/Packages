@@ -854,6 +854,15 @@ extern(1)
 //              ^ punctuation.section.parens.end.d
 //                ^ punctuation.section.block.begin.d
 //                 ^ punctuation.section.block.end.d
+  if (const x = y) {}
+//^^ keyword.control.conditional.d
+//   ^ punctuation.section.parens.begin.d
+//    ^^^^^ storage.modifier.d
+//          ^ variable.other.d
+//              ^ variable.other.d
+//               ^ punctuation.section.parens.end.d
+//                 ^ punctuation.section.block.begin.d
+//                  ^ punctuation.section.block.end.d
 
   interface S;
 //^^^^^^^^^^^^ meta.interface.d
