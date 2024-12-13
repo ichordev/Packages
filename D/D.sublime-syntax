@@ -4,9 +4,9 @@
 name: D
 scope: source.d
 
-file-extensions: [d, di]
+file_extensions: [d, di]
 
-first-line-match: |-
+first_line_match: |-
   (?xi:
     ^ \#! .*                                     # shebang
   | ^ \s* // .*? -\*- .*? \bd(lang)?\b .*? -\*-  # editorconfig
@@ -22,8 +22,12 @@ variables:
   #integers
   integer_suffix: 'L[uU]|[uU]L|[LuU]'
   decimal_integer: '[1-9][\d_]*|0_*'
-  binary_integer: '(0[bB])([01_]*[01][01_]*)'
-  hexadecimal_integer: '(0[xX])([\h_]*\h[\h_]*)'
+  binary_prefix: '0[bB]'
+  binary_digits_no_single_us: '[01_]*[01][01_]*'
+  binary_integer: '({{binary_prefix}})({{binary_digits_no_single_us}})'
+  hex_prefix: '0[xX]'
+  hex_digits_no_single_us: '[\h_]*\h[\h_]*'
+  hexadecimal_integer: '({{hex_prefix}})({{hex_digits_no_single_us}})'
   integer: '(?:({{decimal_integer}})|{{binary_integer}}|{{hexadecimal_integer}})'
   integer_literal: '{{integer}}({{integer_suffix}})?'
   
@@ -32,6 +36,8 @@ variables:
   #floats
   leading_decimal: '(?:{{decimal_integer}}|0{{decimal_digits_no_single_us}})'
   decimal_exponent: '[eE][+\-]?{{decimal_digits_no_single_us}}'
+  hex_exponent:     '[pP][+\-]?{{decimal_digits_no_single_us}}'
+  float_suffix: '[fF]'
   float_literal_suffix: '[fFL]'
   
   character_lookahead: (?=')
@@ -87,7 +93,6 @@ contexts:
   shebang-body:
     - meta_include_prototype: false
     - meta_scope: comment.line.shebang.d
-    # Note: Keep sync with first_line_match!
     - match: \bdmd|ldc2|gdc\b
       scope: constant.language.shebang.d
     - match: \n
@@ -96,27 +101,65 @@ contexts:
   d:
     - include: statement-list-in
 
+  module-in:
+    - match: \bmodule\b
+      scope: keyword.declaration.namespace.d
+      push:
+        - meta_scope: meta.namespace.d
+        - match: '{{identifier}}(?=\s*(;|$))'
+          scope: meta.path.d entity.name.namespace.d
+        - match: '{{identifier}}'
+          scope: meta.path.d variable.other.d
+          push:
+            - match: \.
+              scope: meta.path.d punctuation.accessor.dot.d
+              pop: true
+            - include: not-whitespace-illegal-pop
+        - include: expect-end-of-line
+
   statement-list-in:
-    - match: '({{leading_decimal}}(\.)(?:\d[\d_]*(?:{{decimal_exponent}})?)?)({{float_literal_suffix}})?' #LeadingDecimal . (DecimalDigitsNoStartingUS DecimalExponent?)?
-      scope: meta.number.float.decimal
+    #HexPrefix HexDigitsNoSingleUS? . HexDigitsNoStartingUS HexExponent
+    - match: '({{hex_prefix}})((?:{{hex_digits_no_single_us}})?(\.)\h[\h_]*{{hex_exponent}})({{float_literal_suffix}})?'
+      scope: meta.number.float.hexadecimal.d
+      captures:
+        1: constant.numeric.base.d
+        2: constant.numeric.value.d
+        3: punctuation.separator.decimal.d
+        4: constant.numeric.suffix.d
+    #HexPrefix HexDigitsNoSingleUS? HexExponent
+    - match: '({{hex_prefix}})((?:{{hex_digits_no_single_us}})?{{hex_exponent}})({{float_literal_suffix}})?'
+      scope: meta.number.float.hexadecimal.d
+      captures:
+        1: constant.numeric.base.d
+        2: constant.numeric.value.d
+        3: constant.numeric.suffix.d
+    
+    #LeadingDecimal . (DecimalDigitsNoStartingUS DecimalExponent?)?
+    - match: '({{leading_decimal}}(\.)(?:\d[\d_]*(?:{{decimal_exponent}})?)?)({{float_literal_suffix}})?'
+      scope: meta.number.float.decimal.d
       captures:
         1: constant.numeric.value.d
         2: punctuation.separator.decimal.d
         3: constant.numeric.suffix.d
-    - match: '((\.)\d[\d_]*(?:{{decimal_exponent}})?)({{float_literal_suffix}})?' #. DecimalDigitsNoStartingUS DecimalExponent?
-      scope: meta.number.float.decimal
+    #. DecimalDigitsNoStartingUS DecimalExponent?
+    - match: '((\.)\d[\d_]*(?:{{decimal_exponent}})?)({{float_literal_suffix}})?'
+      scope: meta.number.float.decimal.d
       captures:
         1: constant.numeric.value.d
         2: punctuation.separator.decimal.d
         3: constant.numeric.suffix.d
-    - match: '({{leading_decimal}}{{decimal_exponent}})({{float_literal_suffix}})?' #LeadingDecimal DecimalExponent
-      scope: meta.number.float.decimal
+    #LeadingDecimal DecimalExponent
+    - match: '({{leading_decimal}}{{decimal_exponent}})({{float_literal_suffix}})?'
+      scope: meta.number.float.decimal.d
       captures:
         1: constant.numeric.value.d
         2: constant.numeric.suffix.d
-    #- match: '{{hex_float}}'
-    #  scope: meta.number.float.hexadecimal constant.numeric.value.d
-    #  set: float-suffix
+    #Integer FloatSuffix
+    - match: '({{decimal_integer}})({{float_suffix}})'
+      scope: meta.number.float.decimal.d
+      captures:
+        1: constant.numeric.value.d
+        2: constant.numeric.suffix.d
     
     - match: '{{binary_integer}}({{integer_suffix}})?'
       scope: meta.number.integer.binary.d
@@ -131,11 +174,10 @@ contexts:
         2: constant.numeric.value.d
         3: constant.numeric.suffix.d
     - match: '({{decimal_integer}})({{integer_suffix}})?'
-      scope: meta.number.integer.decimal.d constant.numeric.value.d
+      scope: meta.number.integer.decimal.d
       captures:
-        1: constant.numeric.base.d
-        2: constant.numeric.value.d
-        3: constant.numeric.suffix.d
+        1: constant.numeric.value.d
+        2: constant.numeric.suffix.d
   
   not-whitespace-illegal:
     - match: '\S'
