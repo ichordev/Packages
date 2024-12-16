@@ -15,7 +15,7 @@ first_line_match: |-
 variables:
   identifier: '[_[:alpha:]][_[:alnum:]]*'
   #name_lookahead: '(?=\b{{identifier}}\b)'
-  #identifier_ref: '\.?\s*{{identifier}}(\s*\.\s*{{identifier}})*'
+  #qualified_identifier: '\.?\s*{{identifier}}(\s*\.\s*{{identifier}})*'
   string_postfix: '[cwd]?'
   escape_sequence: '\\([''"?\\0abfnrtv]|x\h{2}|[0-7]{1,3}|u\h{4}|U\h{8}|&\w+;)'
   
@@ -40,48 +40,51 @@ variables:
   float_suffix: '[fF]'
   float_literal_suffix: '[fFL]'
   
-  character_lookahead: (?=')
-  string_lookahead: '(?=`|[rxq]?"|q{)'
+  #character_lookahead: (?=')
+  #string_lookahead: '(?=`|[rxq]?"|q{)'
   
-  definitely_value_lookahead: '(?=!|~|\+|\-|\*|&|\bcast\b|\bdelete\b|\bnew\b|\bimport\b|\bis\b|\b__traits\b|\bfunction\b|\bdelegate\b|[0-9]|\[|\(|{{string_lookahead}}|\b({{language_constant}})\b|\b({{language_variable}})\b)'
-  definitely_declaration_lookahead: '(?=(?:{{identifier}}\.)*{{identifier}}(\s+|\s*\*+\s*|\**\[.*\]\s*){{identifier}}|\b({{type_qualifier}})\b)'
+  #definitely_value_lookahead: '(?=!|~|\+|\-|\*|&|\bcast\b|\bdelete\b|\bnew\b|\bimport\b|\bis\b|\b__traits\b|\bfunction\b|\bdelegate\b|[0-9]|\[|\(|{{string_lookahead}}|\b({{language_constant}})\b|\b({{language_variable}})\b)'
+  #definitely_declaration_lookahead: '(?=(?:{{identifier}}\.)*{{identifier}}(\s+|\s*\*+\s*|\**\[.*\]\s*){{identifier}}|\b({{type_qualifier}})\b)'
   
-  type_qualifier: 'const|immutable|inout|shared'
-  type_qualifier_lookahead: '(?=\b({{type_qualifier}})\b)'
-  attribute_lookahead: '(?=@|\b({{attributes}}|extern|align|deprecated|pragma|private|protected|public|export|package)\b)'
-  attributes: 'static|abstract|final|override|synchronized|scope|__gshared|nothrow|pure|ref|return|auto'
-  at_attributes: 'disable|nogc|property|safe|system|trusted'
-  function_attribute_lookahead: '{{attribute_lookahead}}|{{type_qualifier_lookahead}}'
-  parameter_attribute_lookahead: '(?=\b({{parameter_attribute}})\b)'
-  parameter_attribute: 'in|lazy|out|alias'
+  #type_qualifier: 'const|immutable|inout|shared'
+  #type_qualifier_lookahead: '(?=\b({{type_qualifier}})\b)'
+  #attribute_lookahead: '(?=@|\b({{attributes}}|extern|align|deprecated|pragma|private|protected|public|export|package)\b)'
+  #attributes: 'static|abstract|final|override|synchronized|scope|__gshared|nothrow|pure|ref|return|auto'
+  #at_attributes: 'disable|nogc|property|safe|system|trusted'
+  #function_attribute_lookahead: '{{attribute_lookahead}}|{{type_qualifier_lookahead}}'
+  #parameter_attribute_lookahead: '(?=\b({{parameter_attribute}})\b)'
+  #parameter_attribute: 'in|lazy|out|alias'
   
-  construction_lookahead: '(?=~?\s*this\s*\()'
+  #construction_lookahead: '(?=~?\s*this\s*\()'
   
   keyword: 'else|enum|export|extern|debug|default|delegate|delete|deprecated|do|body|break|case|cast|catch|class|const|continue|abstract|alias|align|asm|assert|auto|final|finally|for|foreach|foreach_reverse|function|goto|if|immutable|import|in|inout|interface|invariant|is|lazy|macro|mixin|module|new|nothrow|out|override|package|pragma|private|protected|public|pure|ref|return|scope|shared|static|struct|switch|synchronized|template|throw|try|typeid|typeof|union|unittest|version|while|with|__gshared|__traits|__vector|__parameters'
-  basic_type: 'bool|byte|cdouble|cent|cfloat|char|creal|dchar|double|float|idouble|ifloat|int|ireal|long|real|short|ubyte|ucent|uint|ulong|ushort|void|wchar'
-  builtin_type_alias: 'string|dstring|wstring|size_t|ptrdiff_t|noreturn'
-  language_constant: 'null|true|false|__FILE__|__FILE_FULL_PATH__|__MODULE__|__LINE__|__FUNCTION__|__PRETTY_FUNCTION__|__DATE__|__EOF__|__TIME__|__TIMESTAMP__|__VENDOR__|__VERSION__|__ctfe'
-  language_variable: 'this|super'
-  reserved: '{{keyword}}|{{basic_type}}|{{language_constant}}|{{language_variable}}'
-
-  traits: 'isAbstractClass|isArithmetic|isAssociativeArray|isFinalClass|isPOD|isNested|isFuture|isDeprecated|isFloating|isIntegral|isScalar|isStaticArray|isUnsigned|isDisabled|isVirtualFunction|isVirtualMethod|isAbstractFunction|isFinalFunction|isStaticFunction|isOverrideFunction|isTemplate|isRef|isOut|isLazy|isReturnOnStack|isCopyable|isZeroInit|isModule|isPackage|hasMember|hasCopyConstructor|hasPostblit|identifier|getAliasThis|getAttributes|getFunctionAttributes|getFunctionVariadicStyle|getLinkage|getLocation|getMember|getOverloads|getParameterStorageClasses|getPointerBitmap|getCppNamespaces|getVisibility|getProtection|getTargetInfo|getVirtualFunctions|getVirtualMethods|getUnitTests|parent|child|classInstanceSize|classInstanceAlignment|getVirtualIndex|allMembers|derivedMembers|isSame|compiles|toType|initSymbol|parameters'
-  pragmas: 'crt_constructor|crt_destructor|inline|lib|linkerDirective|mangle|msg|printf|scanf|startaddress|LDC_alloca|LDC_allow_inline|LDC_extern_weak|LDC_global_crt_ctor|LDC_global_crt_dtor|LDC_inline_ir|LDC_intrinsic|LDC_never_inline|LDC_no_moduleinfo|LDC_no_typeinfo|LDC_va_start|LDC_va_arg|LDC_va_end|LDC_va_copy'
-
-  operator_overloads: 'opNeg|opCom|opPostInc|opPostDec|opCast|opAdd|opSub|opSub_r|opMul|opDiv|opDiv_r|opMod|opMod_r|opAnd|opOr|opXor|opShl|opShl_r|opShr|opShr_r|opUShr|opUShr_r|opCat|opCat_r|opEquals|opEquals|opCmp|opCmp|opCmp|opCmp|opAddAssign|opSubAssign|opMulAssign|opDivAssign|opModAssign|opAndAssign|opOrAssign|opXorAssign|opShlAssign|opShrAssign|opUShrAssign|opCatAssign|opIndex|opIndexAssign|opCall|opSlice|opSliceAssign|opPos|opAdd_r|opMul_r|opAnd_r|opOr_r|opXor_r'
-
-  block_statement_loohahead: '(?={)'
-
-  exclamation_mark: '!(?!=|in\b|is\b)'
+  special_keyword: '__FILE__|__FILE_FULL_PATH__|__MODULE__|__LINE__|__FUNCTION__|__PRETTY_FUNCTION__'
+  special_token: '__DATE__|__EOF__|__TIME__|__TIMESTAMP__|__VENDOR__|__VERSION__'
+  
+  #basic_type: 'bool|byte|cdouble|cent|cfloat|char|creal|dchar|double|float|idouble|ifloat|int|ireal|long|real|short|ubyte|ucent|uint|ulong|ushort|void|wchar'
+  #builtin_type_alias: 'string|dstring|wstring|size_t|ptrdiff_t|noreturn'
+  #language_constant: 'null|true|false|__FILE__|__FILE_FULL_PATH__|__MODULE__|__LINE__|__FUNCTION__|__PRETTY_FUNCTION__|__ctfe'
+  #language_variable: 'this|super'
+  #reserved: '{{keyword}}|{{basic_type}}|{{language_constant}}|{{language_variable}}'
+  
+  traits_keyword: 'isArithmetic|isFloating|isIntegral|isScalar|isUnsigned|isStaticArray|isAssociativeArray|isAbstractClass|isFinalClass|isCopyable|isPOD|toType|isZeroInit|hasCopyConstructor|hasPostblit|getAliasThis|getPointerBitmap|getVirtualFunctions|getVirtualMethods|classInstanceSize|classInstanceAlignment|initSymbol|isDisabled|getVirtualIndex|isVirtualFunction|isVirtualMethod|isAbstractFunction|isFinalFunction|isOverrideFunction|isStaticFunction|isReturnOnStack|getFunctionVariadicStyle|getFunctionAttributes|isRef|getParameterStorageClasses|parameters|fullyQualifiedName|isNested|isFuture|isDeprecated|isTemplate|isModule|isPackage|hasMember|identifier|getAttributes|getBitfieldOffset|getBitfieldWidth|getLinkage|getLocation|getMember|getOverloads|getCppNamespaces|getVisibility|fullyQualifiedName|getProtection|getTargetInfo|getUnitTests|parent|child|allMembers|derivedMembers|isSame|compiles'
+  pragma_identifier: 'crt_constructor|crt_destructor|inline|lib|linkerDirective|mangle|msg|printf|scanf|startaddress|LDC_alloca|LDC_allow_inline|LDC_extern_weak|LDC_global_crt_ctor|LDC_global_crt_dtor|LDC_inline_ir|LDC_intrinsic|LDC_never_inline|LDC_no_moduleinfo|LDC_no_typeinfo|LDC_va_start|LDC_va_arg|LDC_va_end|LDC_va_copy'
+  
+  operator_overloads: 'opUnary|opIndexUnary|opCast|opBinary|opBinaryRight|opEquals|opCmp|opCall|opAssign|opIndexAssign|opOpAssign|opIndexOpAssign|opSliceOpAssign|opIndex|opSlice|opDollar|opDispatch'
+  
+  #block_statement_loohahead: '(?={)'
+  
+  #exclamation_mark: '!(?!=|in\b|is\b)'
 
 contexts:
   prototype:
     - include: comment-in
-
+  
   main:
     - meta_include_prototype: false
     - match: ''
       set: [d, shebang]
-
+  
   shebang:
     - meta_include_prototype: false
     - match: ^\#!
@@ -89,7 +92,7 @@ contexts:
       set: shebang-body
     - match: ^|(?=\S)  # Note: Ensure to highlight shebang if syntax is embedded.
       pop: 1
-
+  
   shebang-body:
     - meta_include_prototype: false
     - meta_scope: comment.line.shebang.d
@@ -97,11 +100,14 @@ contexts:
       scope: constant.language.shebang.d
     - match: \n
       pop: 1
-
+  
   d:
-    - include: statement-list-in
-
-  module-in:
+    - include: module-declaration
+    - include: decl-defs
+  
+  module-declaration:
+    - include: deprecated-attribute
+    - include: user-defined-attribute
     - match: \bmodule\b
       scope: keyword.declaration.namespace.d
       push:
@@ -116,8 +122,8 @@ contexts:
               pop: true
             - include: not-whitespace-illegal-pop
         - include: expect-end-of-line
-
-  statement-list-in:
+  
+  decl-defs:
     #HexPrefix HexDigitsNoSingleUS? . HexDigitsNoStartingUS HexExponent
     - match: '({{hex_prefix}})((?:{{hex_digits_no_single_us}})?(\.)\h[\h_]*{{hex_exponent}})({{float_literal_suffix}})?'
       scope: meta.number.float.hexadecimal.d
@@ -179,6 +185,35 @@ contexts:
         1: constant.numeric.value.d
         2: constant.numeric.suffix.d
   
+  assign-expression:
+    - match: '\w+'
+      set: closing-paren
+  
+  deprecated-attribute:
+    - match: 'deprecated'
+      scope: keyword.other.deprecated.d
+      set:
+        - match: '\('
+          scope: punctuation.section.parens.begin.d
+          set: assign-expression #NOTE TO SELF: TRY USING `branch` and `fail`!
+        - match: ''
+          pop: true
+  
+  user-defined-attribute:
+    - match: '@'
+      scope: punctuation.definition.annotation.begin.d
+      set:
+        - match: '{{identifier}}'
+          scope: meta.path.d storage.type.d
+          pop: true
+          #TODO: add the rest of the grammar
+  
+  closing-paren:
+    - match: '\)'
+      scope: punctuation.section.parens.end.d
+      pop: true
+    - include: not-whitespace-illegal-pop
+  
   not-whitespace-illegal:
     - match: '\S'
       scope: invalid.illegal.d
@@ -186,7 +221,7 @@ contexts:
     - match: '\S'
       scope: invalid.illegal.d
       pop: true
-
+  
   end-of-line-in:
     - match: ';'
       scope: punctuation.terminator.d
@@ -201,51 +236,51 @@ contexts:
     - include: end-of-line
     - match: '(?=\S)'
       pop: true
-
+  
   check-brackets-in:
     - match: '[\}\]\)]'
       scope: invalid.illegal.d
-
+  
   meta-function:
     - meta_scope: meta.function.d
     - match: ''
       pop: true
-
+  
   meta-function-parameters:
     - meta_scope: meta.function.parameters.d
     - match: ''
       pop: true
-
+  
   meta-function-call:
     - meta_scope: meta.function-call.d
     - match: ''
       pop: true
-
+  
   meta-function-call-template:
     - meta_scope: meta.function-call.template.d
     - match: ''
       pop: true
-
+  
   meta-class:
     - meta_scope: meta.class.d
     - match: ''
       pop: true
-
+  
   meta-interface:
     - meta_scope: meta.interface.d
     - match: ''
       pop: true
-
+  
   meta-struct:
     - meta_scope: meta.struct.d
     - match: ''
       pop: true
-
+  
   meta-union:
     - meta_scope: meta.union.d
     - match: ''
       pop: true
-
+  
   meta-enum:
     - meta_scope: meta.enum.d
     - match: ''
