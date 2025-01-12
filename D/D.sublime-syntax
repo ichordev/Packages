@@ -382,6 +382,34 @@ contexts:
             1: punctuation.definition.string.end.d
             2: storage.type.string.d
           pop: true
+    # Double-quoted IES
+    - match: '(i)(")'
+      captures:
+        1: storage.modifier.string.d
+        2: punctuation.definition.string.begin.d
+      set:
+        - meta_include_prototype: false
+        - meta_scope: meta.string.d
+        - match: '(")({{string_postfix}})'
+          captures:
+            1: punctuation.definition.string.end.d
+            2: storage.type.string.d
+          pop: true
+        - match: '\$\('
+          scope: punctuation.section.interpolation.begin.d string.quoted.double.d
+          push:
+          - match: '\)'
+            scope: punctuation.section.interpolation.end.d
+            pop: true
+          - include: value
+        - match: '{{escape_sequence}}'
+          scope: constant.character.escape.d
+        - match: '\\\$'
+          scope: constant.character.escape.d
+        - match: \\.
+          scope: invalid.illegal.unknown-escape.d
+        - match: .
+          scope: string.quoted.double.d
     # Alternate Wysiwyg string
     - match: "`"
       scope: punctuation.definition.string.begin.d
@@ -393,7 +421,29 @@ contexts:
             1: punctuation.definition.string.end.d
             2: storage.type.string.d
           pop: true
-    # Deprecated Hex string
+    # Wysiwyg IES
+    - match: "(i)(`)"
+      captures:
+        1: storage.modifier.string.d
+        2: punctuation.definition.string.begin.d
+      set:
+        - meta_include_prototype: false
+        - meta_scope: meta.string.d
+        - match: '(`)({{string_postfix}})'
+          captures:
+            1: punctuation.definition.string.end.d
+            2: storage.type.string.d
+          pop: true
+        - match: '\$\('
+          scope: punctuation.section.interpolation.begin.d string.quoted.double.raw.backtick.d
+          push:
+          - match: '\)'
+            scope: punctuation.section.interpolation.end.d
+            pop: true
+          - include: value
+        - match: .
+          scope: string.quoted.double.raw.backtick.d
+    # Hex string
     - match: (x)(")
       captures:
         1: storage.modifier.string.d
@@ -502,6 +552,25 @@ contexts:
         - match: '}'
           scope: string.unquoted.embedded.d punctuation.definition.string.end.d
           pop: true
+        - include: tokens-in
+    # Token IES
+    - match: '(iq)({)'
+      captures:
+        1: storage.modifier.string.d
+        2: punctuation.definition.string.begin.d
+      scope: string.unquoted.embedded.d
+      set:
+        - meta_scope: meta.string.d
+        - match: '}'
+          scope: string.unquoted.embedded.d punctuation.definition.string.end.d
+          pop: true
+        - match: '\$\('
+          scope: punctuation.section.interpolation.begin.d
+          push:
+          - match: '\)'
+            scope: punctuation.section.interpolation.end.d
+            pop: true
+          - include: value
         - include: tokens-in
 
   # Purely a set of un-verified tokens
